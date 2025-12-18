@@ -11,10 +11,10 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
     
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@3951f0ad7a0ac05e18e89443b44330920aa54a01 # v4.3.0
       with:
         dotnet-version: 8.0.x
         
