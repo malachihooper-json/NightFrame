@@ -1,0 +1,77 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>NIGHTFRAME</AssemblyName>
+    <RootNamespace>NIGHTFRAME.Drone</RootNamespace>
+    <Version>2.0.0</Version>
+    <Authors>Project NIGHTFRAME</Authors>
+    <Product>NIGHTFRAME Network</Product>
+    <Company>NIGHTFRAME</Company>
+    <Description>NIGHTFRAME Drone - Autonomous Compute Node (Native AOT Binary)</Description>
+    
+    <!-- Native AOT Configuration (enabled only for publish) -->
+    <PublishAot Condition="'$(PublishAot)' == ''">false</PublishAot>
+    <IlcTrimMode>link</IlcTrimMode>
+    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    
+    <!-- Disable analyzers that cause issues -->
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+    <EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+    
+    <!-- Single file for portability -->
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    
+    <!-- Stealth: No console window in release -->
+    <OutputType Condition="'$(Configuration)' == 'Release'">WinExe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- gRPC client for Mothership communication -->
+    <PackageReference Include="Grpc.Net.Client" Version="2.60.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.25.3" />
+    <PackageReference Include="Grpc.Tools" Version="2.60.0" PrivateAssets="All" />
+    
+    <!-- Hardware info -->
+    <PackageReference Include="Hardware.Info" Version="100.1.0.1" />
+    
+    <!-- ONNX Runtime for neural inference -->
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.17.1" />
+    
+    <!-- ML.NET for training and running models -->
+    <PackageReference Include="Microsoft.ML" Version="3.0.1" />
+    <PackageReference Include="Microsoft.ML.FastTree" Version="3.0.1" />
+    
+    <!-- Serial port for modem communication -->
+    <PackageReference Include="System.IO.Ports" Version="8.0.0" />
+    
+    <!-- Cryptographic identity -->
+    <PackageReference Include="NSec.Cryptography" Version="24.4.0" />
+    
+    <!-- LiteDB for local persistence (sharing config, session logs) -->
+    <PackageReference Include="LiteDB" Version="5.0.21" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Protobuf definitions (shared with Orchestrator) -->
+    <Protobuf Include="..\Orchestrator\Protos\*.proto" GrpcServices="Client" Link="Protos\%(Filename).proto" />
+  </ItemGroup>
+
+  <!-- Native AOT compatibility hints -->
+  <ItemGroup>
+    <TrimmerRootDescriptor Include="rd.xml" />
+  </ItemGroup>
+
+  <!-- Project References -->
+  <ItemGroup>
+    <ProjectReference Include="..\Shared\Shared.csproj" />
+  </ItemGroup>
+
+</Project>

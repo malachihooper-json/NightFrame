@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Endless Motivation</title>
+
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Motivation">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <style>
+        /* --- CORE STYLES --- */
+        html {
+            overflow: hidden;
+            height: 100%;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            height: 100%;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            text-align: center;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: none;
+            touch-action: manipulation;
+        }
+
+        .container {
+            max-width: 700px;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- FLICKER EFFECT (5Hz) --- */
+        /* 
+           1 second = 1000ms. 
+           5 cycles per second = 200ms per cycle.
+           This class is added via JavaScript only after the safety warning.
+        */
+        .flicker-active {
+            animation: pulse 0.2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.85;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* --- UI ELEMENTS --- */
+        button {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.3s;
+            margin: 10px;
+        }
+
+        button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .disclaimer-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* --- BALL ANIMATION --- */
+        #ball-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            background: black;
+        }
+
+        #ball-text {
+            position: absolute;
+            top: calc(50% + 80px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: calc(100% - 40px);
+            padding: 0 20px;
+            box-sizing: border-box;
+            font-size: 1.5rem;
+            pointer-events: none;
+            z-index: 12;
+            text-align: center;
+        }
+
+        #the-ball {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background-color: white;
+            border-radius: 50%;
+            z-index: 11;
+            animation: ballPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes ballPulse {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.15);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            width: 100%;
+            padding: 10px;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: auto;
+            z-index: 100;
+        }
+
+        /* --- PROGRESS BAR --- */
+        .progress-container {
+            width: 80%;
+            max-width: 400px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid white;
+            margin-top: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #fff, #aaa, #fff);
+            transition: width 1.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        .start-over-btn {
+            margin-top: 40px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- MOBILE STYLES --- */
+        @media (max-width: 768px) {
+
+            .disclaimer-text,
+            .container p {
+                text-align: center;
+            }
+
+            #ball-text {
+                text-align: center;
+                font-size: 1.2rem;
+                padding: 0 30px;
+            }
+
+            .container {
+                padding: 30px;
+            }
+
+            h1 {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SCREEN 1: DISCLAIMER (Steps through 1-8) -->
+    <div id="screen-disclaimer" class="container">
+        <h1>Things to Know</h1>
+        <p id="disc-text" class="disclaimer-text"></p>
+
+        <button id="btn-next" onclick="nextDisclaimer()">Next</button>
+
+        <div id="btn-yesno" class="hidden">
+            <button onclick="handleProceed(true)">YES</button>
+            <button onclick="handleProceed(false)">NO</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: INDUCTION (Bouncing Ball) -->
+    <div id="screen-induction" class="hidden">
+        <div id="ball-container">
+            <div id="ball-text">Contemplate this orb</div>
+            <div id="the-ball"></div>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: BUTTON -->
+    <div id="screen-button" class="container hidden">
+        <button onclick="triggerMotivation()">Press this button for endless motivation</button>
+    </div>
+
+    <!-- SCREEN 4: ACCEPT/DENY -->
+    <div id="screen-confirmation" class="container hidden">
+        <h1>Do you accept endless motivation?</h1>
+        <div style="margin-top: 30px;">
+            <button onclick="startAcceptanceFlow()">Accept</button>
+            <button onclick="finish('deny')">Deny</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 5: QUESTIONS -->
+    <div id="screen-questions" class="container hidden">
+        <h1 id="question-text"></h1>
+        <div style="margin-top: 30px;">
+            <button onclick="answerQuestion('agree')">Agree</button>
+            <button onclick="answerQuestion('disagree')">Disagree</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 6: PROGRESS BAR -->
+    <div id="screen-progress" class="container hidden">
+        <h1>Please wait</h1>
+        <div class="progress-container">
+            <div id="progress-bar" class="progress-bar flicker-active"></div>
+        </div>
+    </div>
+
+    <!-- SCREEN 7: RESULT -->
+    <div id="screen-result" class="container hidden">
+        <h1 id="final-text">Granted</h1>
+        <button class="start-over-btn" onclick="startOver()">Start Over</button>
+    </div>
+
+    <!-- SCREEN 8: EXIT -->
+    <div id="screen-exit" class="container hidden">
+        <h1>Better luck next time</h1>
+        <button class="start-over-btn" onclick="startOver()">Start Over</button>
+    </div>
+
+    <footer>
+        Copyright malachihooper.json 2025 All Rights Reserved
+    </footer>
+
+    <script>
+        // --- DATA ---
+        const disclaimers = [
+            "1. Please do not proceed if you are pregnant, experience seizures, intoxicated, or have narcolepsy.", // Static
+            "2. The program will not work if you are distracted.", // Blinking starts
+            "3. The program will not work correctly if you do not relax your body.",
+            "4. The program will not work if you are in a chaotic environment.",
+            "5. The program will not work if you are currently eating or drinking.",
+            "6. The program will not work if you have been interrupted. If you have been interrupted, please start again.",
+            "7. This program can change lives, but it does not work for everyone.",
+            "8. Are you ready to proceed?"
+        ];
+
+        let currentStep = 0;
+        const transitionTime = 10000; // 10 seconds for induction
+
+        // --- ACCEPTANCE QUESTIONS ---
+        const acceptanceQuestions = [
+            "Do you promise to use this motivation to your advantage?",
+            "Are you ready to proceed?"
+        ];
+        let currentQuestion = 0;
+
+        // --- DOM ELEMENTS ---
+        const sDisclaimer = document.getElementById('screen-disclaimer');
+        const sInduction = document.getElementById('screen-induction');
+        const sButton = document.getElementById('screen-button');
+        const sConfirmation = document.getElementById('screen-confirmation');
+        const sQuestions = document.getElementById('screen-questions');
+        const sProgress = document.getElementById('screen-progress');
+        const sResult = document.getElementById('screen-result');
+        const sExit = document.getElementById('screen-exit');
+        const finalText = document.getElementById('final-text');
+        const discText = document.getElementById('disc-text');
+        const questionText = document.getElementById('question-text');
+        const progressBar = document.getElementById('progress-bar');
+        const btnNext = document.getElementById('btn-next');
+        const btnYesNo = document.getElementById('btn-yesno');
+
+        // --- INIT ---
+        window.onload = updateDisclaimerView;
+
+        // --- DISCLAIMER LOGIC ---
+        function updateDisclaimerView() {
+            discText.innerText = disclaimers[currentStep];
+
+            // Safety: Only blink AFTER the first screen
+            if (currentStep > 0) {
+                document.body.classList.add('flicker-active');
+            } else {
+                document.body.classList.remove('flicker-active');
+            }
+
+            // Controls: Show Yes/No on last step
+            if (currentStep === disclaimers.length - 1) {
+                btnNext.classList.add('hidden');
+                btnYesNo.classList.remove('hidden');
+            } else {
+                btnNext.classList.remove('hidden');
+                btnYesNo.classList.add('hidden');
+            }
+        }
+
+        function nextDisclaimer() {
+            if (currentStep < disclaimers.length - 1) {
+                currentStep++;
+                updateDisclaimerView();
+            }
+        }
+
+        function handleProceed(isReady) {
+            sDisclaimer.classList.add('hidden');
+            if (isReady) {
+                startInduction();
+            } else {
+                sExit.classList.remove('hidden');
+            }
+        }
+
+        // --- INDUCTION LOGIC ---
+        // Ball is now static and centered via CSS
+
+        function startInduction() {
+            sInduction.classList.remove('hidden');
+            setTimeout(() => {
+                sInduction.classList.add('hidden');
+                sButton.classList.remove('hidden');
+            }, transitionTime);
+        }
+
+        function triggerMotivation() {
+            sButton.classList.add('hidden');
+            sConfirmation.classList.remove('hidden');
+        }
+
+        // --- ACCEPTANCE FLOW ---
+        function startAcceptanceFlow() {
+            currentQuestion = 0;
+            sConfirmation.classList.add('hidden');
+            sQuestions.classList.remove('hidden');
+            questionText.innerText = acceptanceQuestions[currentQuestion];
+        }
+
+        function answerQuestion(answer) {
+            if (answer === 'disagree') {
+                // User disagreed - exit
+                sQuestions.classList.add('hidden');
+                sExit.classList.remove('hidden');
+                return;
+            }
+
+            currentQuestion++;
+            if (currentQuestion < acceptanceQuestions.length) {
+                // Show next question
+                questionText.innerText = acceptanceQuestions[currentQuestion];
+            } else {
+                // All questions answered - show progress bar
+                sQuestions.classList.add('hidden');
+                startProgressBar();
+            }
+        }
+
+        // --- BLISSFUL ANTICIPATION PROGRESS BAR ---
+        function startProgressBar() {
+            sProgress.classList.remove('hidden');
+            let progress = 100;
+            progressBar.style.width = '100%';
+
+            // Smooth, gentle decrements for blissful anticipation
+            // Longer pauses, smaller steps, creating a sense of calm expectation
+            const decrements = [
+                { delay: 1200, amount: 6 },
+                { delay: 1800, amount: 4 },
+                { delay: 2200, amount: 5 },
+                { delay: 1500, amount: 3 },
+                { delay: 2000, amount: 7 },
+                { delay: 2500, amount: 4 },
+                { delay: 1800, amount: 6 },
+                { delay: 2200, amount: 5 },
+                { delay: 2800, amount: 3 },
+                { delay: 2000, amount: 8 },
+                { delay: 2400, amount: 6 },
+                { delay: 1600, amount: 4 },
+                { delay: 2600, amount: 7 },
+                { delay: 2200, amount: 5 },
+                { delay: 3000, amount: 4 },
+                { delay: 2400, amount: 6 },
+                { delay: 2800, amount: 5 },
+                { delay: 2000, amount: 8 }
+            ];
+
+            let totalDelay = 0;
+            decrements.forEach((step = { delay, amount }) => {
+                totalDelay += step.delay;
+                setTimeout(() => {
+                    progress -= step.amount;
+                    if (progress < 0) progress = 0;
+                    progressBar.style.width = progress + '%';
+                }, totalDelay);
+            });
+
+            // Final gentle completion
+            setTimeout(() => {
+                progressBar.style.width = '0%';
+                setTimeout(() => {
+                    sProgress.classList.add('hidden');
+                    sResult.classList.remove('hidden');
+                    finalText.innerText = "Granted";
+                }, 800);
+            }, totalDelay + 1000);
+        }
+
+        // --- RESULT HANDLER ---
+        function finish(choice) {
+            sConfirmation.classList.add('hidden');
+            if (choice === 'deny') {
+                sExit.classList.remove('hidden');
+            }
+        }
+
+        // --- START OVER ---
+        function startOver() {
+            // Hide all screens
+            sDisclaimer.classList.add('hidden');
+            sInduction.classList.add('hidden');
+            sButton.classList.add('hidden');
+            sConfirmation.classList.add('hidden');
+            sQuestions.classList.add('hidden');
+            sProgress.classList.add('hidden');
+            sResult.classList.add('hidden');
+            sExit.classList.add('hidden');
+
+            // Reset state
+            currentStep = 0;
+            currentQuestion = 0;
+            document.body.classList.remove('flicker-active');
+            progressBar.style.width = '100%';
+
+            // Show disclaimer screen
+            sDisclaimer.classList.remove('hidden');
+            updateDisclaimerView();
+        }
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registered'))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+
+</html>

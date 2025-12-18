@@ -1,0 +1,45 @@
+{
+    "version": 2,
+    "name": "nightframe-console",
+    "framework": "nextjs",
+    "buildCommand": "cd gamma1-web && npm install && npm run build",
+    "outputDirectory": "gamma1-web/.next",
+    "installCommand": "cd gamma1-web && npm install",
+    "devCommand": "cd gamma1-web && npm run dev",
+    "public": true,
+    "regions": [
+        "iad1",
+        "sfo1",
+        "cdg1",
+        "hnd1"
+    ],
+    "headers": [
+        {
+            "source": "/(.*)",
+            "headers": [
+                {
+                    "key": "X-Frame-Options",
+                    "value": "DENY"
+                },
+                {
+                    "key": "X-Content-Type-Options",
+                    "value": "nosniff"
+                },
+                {
+                    "key": "Referrer-Policy",
+                    "value": "strict-origin-when-cross-origin"
+                }
+            ]
+        }
+    ],
+    "rewrites": [
+        {
+            "source": "/api/:path*",
+            "destination": "https://nightframe-orchestrator.example.com/api/:path*"
+        }
+    ],
+    "env": {
+        "NEXT_PUBLIC_ORCHESTRATOR_URL": "@orchestrator_url",
+        "NEXT_PUBLIC_SIGNALR_HUB": "@signalr_hub_url"
+    }
+}

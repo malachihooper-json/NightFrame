@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-android</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>NIGHTFRAME.Drone.Android</RootNamespace>
+    <AssemblyName>NFRAMEDrone</AssemblyName>
+    <ApplicationId>com.nightframe.drone</ApplicationId>
+    <ApplicationVersion>2</ApplicationVersion>
+    <ApplicationDisplayVersion>2.0.0</ApplicationDisplayVersion>
+    <ApplicationTitle>NFRAME Scout</ApplicationTitle>
+    
+    <!-- Signing -->
+    <AndroidKeyStore>true</AndroidKeyStore>
+    <AndroidSigningKeyStore>nightframe.keystore</AndroidSigningKeyStore>
+    <AndroidSigningKeyAlias>nightframe</AndroidSigningKeyAlias>
+    <AndroidSigningKeyPass>env:NIGHTFRAME_KEYSTORE_PASS</AndroidSigningKeyPass>
+    <AndroidSigningStorePass>env:NIGHTFRAME_KEYSTORE_PASS</AndroidSigningStorePass>
+    
+    <!-- Optimization -->
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <AndroidEnableProfiledAot>true</AndroidEnableProfiledAot>
+    
+    <!-- Nullable -->
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Core shared interfaces -->
+    <ProjectReference Include="..\Shared\Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Shared drone core (select components) -->
+    <Compile Include="..\Drone\Network\InternetGateway.cs" Link="Network\InternetGateway.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.Net.Client" Version="2.59.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.25.1" />
+    <PackageReference Include="NSec.Cryptography" Version="22.4.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <!-- Android resources -->
+    <AndroidResource Include="Resources\**\*" />
+  </ItemGroup>
+</Project>

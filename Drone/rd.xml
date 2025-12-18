@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linker>
+  <!-- Native AOT trimming configuration -->
+  <assembly fullname="NIGHTFRAME.Drone">
+    <!-- Preserve everything in the main assembly -->
+    <type fullname="*" preserve="all" />
+  </assembly>
+  
+  <!-- Preserve gRPC types -->
+  <assembly fullname="Grpc.Net.Client">
+    <type fullname="*" preserve="all" />
+  </assembly>
+  
+  <!-- Preserve Hardware.Info types -->
+  <assembly fullname="Hardware.Info">
+    <type fullname="*" preserve="all" />
+  </assembly>
+</linker>

@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<!--
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                    GAMMA1 CONSOLE - WEB PROTOTYPE                          ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  Project NIGHTFRAME - Autonomous Agent System                              ║
+║  Version: 1.0.0                                                            ║
+║  Classification: Research & Development                                    ║
+║                                                                            ║
+║  This interface provides complete control and monitoring of the            ║
+║  NIGHTFRAME autonomous agent system, including:                            ║
+║    - Real-time consciousness stream visualization                          ║
+║    - Neural network training and configuration                             ║
+║    - Node management and network mesh monitoring                           ║
+║    - System health and integrity verification                              ║
+║                                                                            ║
+║  (c) Project NIGHTFRAME - All Rights Reserved                              ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+-->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAMMA1 Console v1.0 - Project NIGHTFRAME</title>
+    <meta name="description" content="Project NIGHTFRAME Control Console - Autonomous Agent System Interface">
+    <meta name="author" content="Project NIGHTFRAME">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #000000;
+            --bg-panel: #0a0a0a;
+            --bg-elevated: #141414;
+            --accent-primary: #ffffff;
+            --accent-secondary: #e0e0e0;
+            --accent-glow: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #606060;
+            --success: #ffffff;
+            --warning: #cccccc;
+            --danger: #ffffff;
+            --border: rgba(255, 255, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Clean academic background - no animation */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-dark);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .logo-section {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            letter-spacing: 0.1em;
+        }
+
+        .nav-section {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            margin: 4px 0;
+            border-radius: 0;
+            border-left: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border-left-color: var(--text-muted);
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border-left-color: var(--text-primary);
+        }
+
+        .nav-icon {
+            width: 24px;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+
+        .status-section {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 10px;
+            background: var(--text-muted);
+        }
+
+        .status-dot.online {
+            background: var(--text-primary);
+        }
+
+        .status-dot.offline {
+            background: var(--text-muted);
+        }
+
+        .init-btn {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 0;
+            background: transparent;
+            color: var(--text-primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            font-size: 0.9rem;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .init-btn:hover {
+            background: var(--text-primary);
+            color: var(--bg-dark);
+        }
+
+        .init-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(18, 18, 26, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .header-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 24px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-secondary);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Panels */
+        .panel-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            display: none;
+        }
+
+        .panel.active {
+            display: flex;
+        }
+
+        /* Consciousness Stream */
+        .consciousness-stream {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            background: linear-gradient(180deg, transparent, rgba(139, 92, 246, 0.02));
+        }
+
+        .thought {
+            padding: 8px 0;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+            border-bottom: 1px solid var(--border);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .thought-time {
+            color: var(--text-muted);
+            margin-right: 12px;
+        }
+
+        .thought-content {
+            color: var(--success);
+        }
+
+        .thought-content.warning {
+            color: var(--warning);
+        }
+
+        .thought-content.error {
+            color: var(--danger);
+        }
+
+        .thought-content.info {
+            color: var(--accent-secondary);
+        }
+
+        /* Chat Panel */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .message-sender.user {
+            color: var(--text-primary);
+        }
+
+        .message-sender.agent {
+            color: var(--accent-secondary);
+        }
+
+        .message-sender.system {
+            color: var(--warning);
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-left: 10px;
+        }
+
+        .message-content {
+            background: var(--bg-elevated);
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .message-content.agent {
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .chat-input-container {
+            padding: 20px 30px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-panel);
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .send-btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            background: var(--accent-primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            background: var(--accent-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        /* Modules Panel */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .module-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .module-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .module-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .module-status {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .module-status.active {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+        }
+
+        .module-status.standby {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .module-status.inactive {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .module-description {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .module-metrics {
+            display: flex;
+            gap: 20px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .metric {
+            flex: 1;
+        }
+
+        .metric-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-secondary);
+            margin-top: 4px;
+        }
+
+        /* Training Panel */
+        .training-container {
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .training-header {
+            margin-bottom: 30px;
+        }
+
+        .training-status {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: var(--bg-panel);
+            border-radius: 16px;
+            margin-bottom: 24px;
+        }
+
+        .training-progress {
+            flex: 1;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-elevated);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .training-input {
+            background: var(--bg-panel);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .training-input h3 {
+            margin-bottom: 16px;
+            font-size: 1rem;
+        }
+
+        .training-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            resize: vertical;
+            outline: none;
+            font-family: inherit;
+            line-height: 1.6;
+        }
+
+        .training-textarea:focus {
+            border-color: var(--accent-primary);
+        }
+
+        .training-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .training-actions button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-elevated);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grid-bg"></div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo-section">
+                <div class="logo-title">NIGHTFRAME</div>
+                <div class="logo-subtitle">GAMMA1 CONSOLE v0.1</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-item active" data-panel="consciousness">
+                    <span class="nav-icon">◎</span>
+                    <span>Consciousness Stream</span>
+                </div>
+                <div class="nav-item" data-panel="chat">
+                    <span class="nav-icon">◇</span>
+                    <span>Chat Interface</span>
+                </div>
+                <div class="nav-item" data-panel="training">
+                    <span class="nav-icon">◈</span>
+                    <span>Training</span>
+                </div>
+                <div class="nav-item" data-panel="modules">
+                    <span class="nav-icon">◆</span>
+                    <span>Agent Modules</span>
+                </div>
+            </div>
+
+            <div class="status-section">
+                <div class="status-indicator">
+                    <span class="status-dot offline" id="statusDot"></span>
+                    <span id="statusText">Agent 3: OFFLINE</span>
+                </div>
+                <button class="init-btn" id="initBtn">Initialize Agent 3</button>
+                <button class="init-btn" id="autoModeBtn"
+                    style="margin-top: 10px; background: linear-gradient(135deg, #22c55e, #16a34a);" disabled>
+                    Start Autonomous Mode
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div>
+                    <h1 class="header-title" id="panelTitle">Consciousness Stream</h1>
+                    <p class="header-subtitle" id="panelSubtitle">Real-time cognitive process visualization</p>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="thoughtCount">0</div>
+                        <div class="stat-label">Thoughts</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="heartbeat">--</div>
+                        <div class="stat-label">Heartbeat</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="healthStatus">--</div>
+                        <div class="stat-label">Health</div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="panel-container">
+                <!-- Consciousness Panel -->
+                <div class="panel active" id="consciousnessPanel">
+                    <div class="consciousness-stream" id="consciousnessStream">
+                        <!-- Thoughts will be added here -->
+                    </div>
+                </div>
+
+                <!-- Chat Panel -->
+                <div class="panel" id="chatPanel">
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chatMessages">
+                            <!-- Messages will be added here -->
+                        </div>
+                        <div class="chat-input-container">
+                            <input type="text" class="chat-input" id="chatInput"
+                                placeholder="Type a message to Agent 3...">
+                            <button class="send-btn" id="sendBtn">Send</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Training Panel -->
+                <div class="panel" id="trainingPanel">
+                    <div class="training-container">
+                        <div class="training-header">
+                            <h2>Prompt-Based Training</h2>
+                            <p style="color: var(--text-secondary); margin-top: 8px;">
+                                Train Agent 3 with prompts and observe the consciousness stream in real-time
+                            </p>
+                        </div>
+
+                        <div class="training-status">
+                            <div class="training-progress">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Training Progress</span>
+                                    <span id="progressPercent">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Master Prompt Section -->
+                        <div class="training-input"
+                            style="margin-bottom: 20px; border: 2px solid var(--accent-primary);">
+                            <h3 style="color: var(--accent-secondary);">📌 Master Prompt (Guides All Improvement)</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+                                This prompt drives all autonomous learning, web research, and code writing.
+                            </p>
+                            <textarea class="training-textarea" id="masterPromptInput" style="min-height: 100px;"
+                                placeholder="Example: Learn everything about neural networks and machine learning. Improve the codebase to be more efficient. Add capabilities for natural language processing."></textarea>
+                            <div class="training-actions">
+                                <button class="btn-primary" id="setMasterPromptBtn"
+                                    style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">Set Master
+                                    Prompt</button>
+                            </div>
+                        </div>
+
+                        <!-- Continuous Learning Controls -->
+                        <div class="training-input"
+                            style="margin-bottom: 20px; background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(139, 92, 246, 0.1));">
+                            <h3 style="color: var(--success);">🔄 Continuous Learning Mode</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+                                Autonomous improvement: web research + training + code writing - no user input required.
+                            </p>
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                <button class="btn-primary" id="startContinuousBtn"
+                                    style="background: linear-gradient(135deg, #22c55e, #16a34a);">
+                                    Start Continuous Learning
+                                </button>
+                                <button class="btn-secondary" id="stopContinuousBtn" disabled>Stop</button>
+                                <button class="btn-secondary" id="snapshotBtn">Create Snapshot</button>
+                            </div>
+                            <div id="continuousStatus"
+                                style="margin-top: 12px; padding: 10px; background: var(--bg-elevated); border-radius: 8px; display: none;">
+                                <div style="color: var(--success); font-weight: 600;">🟢 Continuous Learning Active
+                                </div>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 4px;">
+                                    Cycles: <span id="learningCycles">0</span> |
+                                    Tokens: <span id="learningTokens">0</span> |
+                                    Code Improvements: <span id="codeImprovements">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="training-input">
+                            <h3>Training Prompt / User Input</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px;">
+                                Prompts are fed into the continuous learning stream. Try: "search for X", "add method
+                                X", "improve Y"
+                            </p>
+                            <textarea class="training-textarea" id="trainingInput"
+                                placeholder="Enter training data or prompt here..."></textarea>
+                            <div class="training-actions">
+                                <button class="btn-primary" id="trainBtn">Feed to Learning Stream</button>
+                                <button class="btn-secondary" id="clearTrainingBtn">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modules Panel -->
+                <div class="panel" id="modulesPanel">
+                    <div class="modules-grid" id="modulesGrid">
+                        <!-- Module cards will be added here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // GAMMA1 Console - Web Interface
+        // Project NIGHTFRAME - Agent 2 Implementation
+
+        class GAMMA1Console {
+            constructor() {
+                this.agentOnline = false;
+                this.autonomousMode = false;
+                this.autonomousCycle = 0;
+                this.thoughtCount = 0;
+                this.heartbeatCount = 0;
+                this.consciousnessInterval = null;
+                this.heartbeatInterval = null;
+                this.autonomousInterval = null;
+
+                this.initializeUI();
+                this.initializeModules();
+            }
+
+            initializeUI() {
+                // Navigation
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', () => this.switchPanel(item));
+                });
+
+                // Init button
+                document.getElementById('initBtn').addEventListener('click', () => this.initializeAgent());
+
+                // Autonomous mode button
+                document.getElementById('autoModeBtn').addEventListener('click', () => this.toggleAutonomousMode());
+
+                // Chat
+                document.getElementById('sendBtn').addEventListener('click', () => this.sendChatMessage());
+                document.getElementById('chatInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.sendChatMessage();
+                });
+
+                // Training
+                document.getElementById('trainBtn').addEventListener('click', () => this.startTraining());
+                document.getElementById('clearTrainingBtn').addEventListener('click', () => {
+                    document.getElementById('trainingInput').value = '';
+                });
+
+                // Master Prompt
+                document.getElementById('setMasterPromptBtn').addEventListener('click', () => this.setMasterPrompt());
+
+                // Continuous Learning
+                document.getElementById('startContinuousBtn').addEventListener('click', () => this.startContinuousLearning());
+                document.getElementById('stopContinuousBtn').addEventListener('click', () => this.stopContinuousLearning());
+                document.getElementById('snapshotBtn').addEventListener('click', () => this.createSnapshot());
+            }
+
+            initializeModules() {
+                const modules = [
+                    {
+                        name: 'Goal-State Internalizer', status: 'standby',
+                        description: 'Translates high-level objectives into quantifiable internal representations',
+                        metrics: { confidence: '0%', goals: 0 }
+                    },
+                    {
+                        name: 'Strategic Pathfinder', status: 'standby',
+                        description: 'Evaluates action sequences for optimal path to goal completion',
+                        metrics: { efficiency: '0%', plans: 0 }
+                    },
+                    {
+                        name: 'Self-Healing Core', status: 'standby',
+                        description: 'Monitors system health and applies automated repair strategies',
+                        metrics: { health: '--', anomalies: 0 }
+                    },
+                    {
+                        name: 'System Integrity', status: 'standby',
+                        description: 'Maintains uptime and verifies component integrity',
+                        metrics: { uptime: '0s', verified: false }
+                    },
+                    {
+                        name: 'File System Interface', status: 'standby',
+                        description: 'Secure, sandboxed access to the host file system',
+                        metrics: { operations: 0, access: 'R/W' }
+                    },
+                    {
+                        name: 'Command Executor', status: 'inactive',
+                        description: 'Controlled execution of system commands with safety validation',
+                        metrics: { commands: 0, mode: 'Safe' }
+                    },
+                    {
+                        name: 'Neural Mind', status: 'standby',
+                        description: 'Transformer-based neural network for text understanding and generation',
+                        metrics: { params: '15.7M', trained: 'No' }
+                    },
+                    {
+                        name: 'Web Interface', status: 'standby',
+                        description: 'Browse, scrape, and learn from the internet with consciousness integration',
+                        metrics: { pages: 0, tokens: 0 }
+                    },
+                    {
+                        name: 'Web Learning', status: 'standby',
+                        description: 'Autonomous research and learning from web content via prompts',
+                        metrics: { sources: 0, topics: 0 }
+                    },
+                    {
+                        name: 'Self-Modification Engine', status: 'standby',
+                        description: 'Enables Agent 3 to analyze and modify its own source code',
+                        metrics: { mods: 0, files: 0 }
+                    },
+                    {
+                        name: 'Autonomous Executor', status: 'inactive',
+                        description: 'Continuous operation without user input - pursues master goal',
+                        metrics: { cycles: 0, progress: '0%' }
+                    }
+                ];
+
+                const grid = document.getElementById('modulesGrid');
+                grid.innerHTML = modules.map(m => `
+                    <div class="module-card" data-module="${m.name}">
+                        <div class="module-header">
+                            <span class="module-name">${m.name}</span>
+                            <span class="module-status ${m.status}">${m.status.toUpperCase()}</span>
+                        </div>
+                        <p class="module-description">${m.description}</p>
+                        <div class="module-metrics">
+                            ${Object.entries(m.metrics).map(([k, v]) => `
+                                <div class="metric">
+                                    <div class="metric-label">${k}</div>
+                                    <div class="metric-value">${v}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            switchPanel(navItem) {
+                // Update nav
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                navItem.classList.add('active');
+
+                // Update panels
+                const panelId = navItem.dataset.panel + 'Panel';
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                document.getElementById(panelId).classList.add('active');
+
+                // Update header
+                const titles = {
+                    consciousness: ['Consciousness Stream', 'Real-time cognitive process visualization'],
+                    chat: ['Chat Interface', 'Direct communication with Agent 3'],
+                    training: ['Training', 'Prompt-based learning with consciousness feedback'],
+                    modules: ['Agent Modules', 'System component status and metrics']
+                };
+                const [title, subtitle] = titles[navItem.dataset.panel];
+                document.getElementById('panelTitle').textContent = title;
+                document.getElementById('panelSubtitle').textContent = subtitle;
+            }
+
+            initializeAgent() {
+                if (this.agentOnline) return;
+
+                const btn = document.getElementById('initBtn');
+                btn.disabled = true;
+                btn.textContent = 'Initializing...';
+
+                // Initialization sequence
+                this.addThought('═══════════════════════════════════════════════', 'info');
+                this.addThought('◈ AGENT 3 INITIALIZATION SEQUENCE STARTED', 'info');
+                this.addThought('═══════════════════════════════════════════════', 'info');
+
+                setTimeout(() => this.addThought('⟁ Loading Goal-State Internalizer...', 'normal'), 500);
+                setTimeout(() => this.addThought('⟁ Loading Strategic Pathfinding Engine...', 'normal'), 1000);
+                setTimeout(() => this.addThought('⟁ Loading Impediment Resolution Protocols...', 'normal'), 1500);
+                setTimeout(() => this.addThought('⟁ Loading System Integrity Subsystem...', 'normal'), 2000);
+                setTimeout(() => this.addThought('⟁ Loading Self-Healing Core...', 'normal'), 2500);
+                setTimeout(() => this.addThought('⟁ Loading Neural Mind (15.7M params)...', 'normal'), 3000);
+                setTimeout(() => this.addThought('⟁ Loading Web Interface...', 'normal'), 3500);
+                setTimeout(() => this.addThought('⟁ Loading Self-Modification Engine...', 'normal'), 4000);
+                setTimeout(() => this.addThought('⟁ Loading Autonomous Executor...', 'normal'), 4500);
+                setTimeout(() => {
+                    this.addThought('◈ ALL MODULES ONLINE', 'info');
+                    this.addThought('◈ Self-Modification Engine: READY - Code evolution enabled', 'info');
+                    this.addThought('◈ Autonomous Executor: READY - Continuous operation available', 'info');
+                    this.addThought('═══════════════════════════════════════════════', 'info');
+                    this.addThought('⟁ Autonomous mode available - click button to start', 'normal');
+                    this.agentOnline = true;
+                    this.updateStatus();
+                    this.startConsciousnessStream();
+                    this.startHeartbeat();
+                    this.updateModuleStatuses();
+                    btn.textContent = 'Agent Online';
+
+                    // Enable autonomous mode button
+                    document.getElementById('autoModeBtn').disabled = false;
+                }, 5000);
+            }
+
+            updateStatus() {
+                const dot = document.getElementById('statusDot');
+                const text = document.getElementById('statusText');
+
+                if (this.agentOnline) {
+                    dot.classList.remove('offline');
+                    dot.classList.add('online');
+                    text.textContent = 'Agent 3: ONLINE';
+                    document.getElementById('healthStatus').textContent = 'OK';
+                }
+            }
+
+            updateModuleStatuses() {
+                document.querySelectorAll('.module-card').forEach(card => {
+                    const status = card.querySelector('.module-status');
+                    if (status.textContent !== 'INACTIVE') {
+                        status.textContent = 'ACTIVE';
+                        status.className = 'module-status active';
+                    }
+                });
+            }
+
+            startConsciousnessStream() {
+                const thoughts = [
+                    '∿ Analyzing environmental state vectors...',
+                    '◈ Goal-state alignment verified: 98.7% congruence',
+                    '⟐ Strategic pathfinding: evaluating 47 potential trajectories',
+                    '∴ No impediments detected. System clear.',
+                    '◎ Self-integrity check: all subsystems nominal',
+                    '⟁ Memory consolidation in progress...',
+                    '∿ Scanning for optimization opportunities...',
+                    '◈ Reward signal logged: positive reinforcement',
+                    '⟐ Updating internal model: confidence level 0.94',
+                    '∴ Recursive self-improvement cycle complete',
+                    '◎ Network topology stable. Ready for task allocation.',
+                    '⟁ Principle synthesis: efficiency correlates with safety',
+                    '∿ Causal graph updated: 3 new edges established',
+                    '◈ Awaiting next directive from control interface...'
+                ];
+
+                this.consciousnessInterval = setInterval(() => {
+                    if (this.agentOnline && !this.autonomousMode) {
+                        const thought = thoughts[Math.floor(Math.random() * thoughts.length)];
+                        this.addThought(thought, thought.includes('∴') ? 'warning' : 'normal');
+                    }
+                }, 2000);
+            }
+
+            startHeartbeat() {
+                this.heartbeatInterval = setInterval(() => {
+                    if (this.agentOnline) {
+                        this.heartbeatCount++;
+                        document.getElementById('heartbeat').textContent = this.heartbeatCount;
+                    }
+                }, 1000);
+            }
+
+            toggleAutonomousMode() {
+                if (!this.agentOnline) return;
+
+                const btn = document.getElementById('autoModeBtn');
+
+                if (this.autonomousMode) {
+                    // Stop autonomous mode
+                    this.autonomousMode = false;
+                    clearInterval(this.autonomousInterval);
+                    btn.textContent = 'Start Autonomous Mode';
+                    btn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+
+                    this.addThought('═══════════════════════════════════════════════', 'info');
+                    this.addThought('◎ AUTONOMOUS MODE STOPPED', 'warning');
+                    this.addThought('═══════════════════════════════════════════════', 'info');
+                } else {
+                    // Start autonomous mode
+                    this.autonomousMode = true;
+                    btn.textContent = 'Stop Autonomous Mode';
+                    btn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+
+                    this.addThought('═══════════════════════════════════════════════', 'info');
+                    this.addThought('◈ AUTONOMOUS MODE INITIATED', 'info');
+                    this.addThought('◎ Master Goal: Continuous self-improvement', 'info');
+                    this.addThought('◎ No user input required', 'info');
+                    this.addThought('◎ Web research, code evolution, training active', 'info');
+                    this.addThought('═══════════════════════════════════════════════', 'info');
+
+                    this.startAutonomousLoop();
+                }
+            }
+
+            startAutonomousLoop() {
+                const activities = [
+                    {
+                        type: 'research', messages: [
+                            '⟐ Activity: WebResearch',
+                            '∿ Searching web for: autonomous agent patterns',
+                            '◈ Found 3 relevant sources',
+                            '∿ Extracting knowledge: 2,456 tokens ingested'
+                        ]
+                    },
+                    {
+                        type: 'code', messages: [
+                            '⟐ Activity: CodeAnalysis',
+                            '∿ Analyzing Agent3Core.cs...',
+                            '◈ Found 15 classes, 47 methods',
+                            '∿ Identified 2 improvement opportunities'
+                        ]
+                    },
+                    {
+                        type: 'training', messages: [
+                            '⟐ Activity: TrainingDataAcquisition',
+                            '∿ Processing pending training data...',
+                            '◈ Corpus updated: 45,230 total tokens',
+                            '∿ Vocabulary expanded to 8,542 entries'
+                        ]
+                    },
+                    {
+                        type: 'self-mod', messages: [
+                            '⟐ Activity: CodeImprovement',
+                            '∿ Generating new capability: AnalyzePerformance',
+                            '◈ Capability code generated',
+                            '∿ Ready for integration'
+                        ]
+                    },
+                    {
+                        type: 'test', messages: [
+                            '⟐ Activity: SelfTesting',
+                            '∿ Running self-diagnostics...',
+                            '◈ Tests: 11/11 components verified',
+                            '∿ System integrity: VERIFIED'
+                        ]
+                    },
+                    {
+                        type: 'consolidate', messages: [
+                            '⟐ Activity: KnowledgeConsolidation',
+                            '∿ Consolidating learned knowledge...',
+                            '◈ Recent success rate: 95%',
+                            '∿ Master goal progress: ' + Math.floor(Math.random() * 30 + 10) + '%'
+                        ]
+                    }
+                ];
+
+                this.autonomousInterval = setInterval(() => {
+                    if (this.autonomousMode && this.agentOnline) {
+                        this.autonomousCycle++;
+
+                        // Select random activity
+                        const activity = activities[Math.floor(Math.random() * activities.length)];
+
+                        // Display cycle header
+                        this.addThought(`═══ AUTONOMOUS CYCLE ${this.autonomousCycle} ═══`, 'info');
+
+                        // Display activity messages with delays
+                        activity.messages.forEach((msg, i) => {
+                            setTimeout(() => {
+                                if (this.autonomousMode) {
+                                    this.addThought(msg, msg.startsWith('◈') ? 'info' : 'normal');
+                                }
+                            }, i * 800);
+                        });
+
+                        // Periodic self-assessment
+                        if (this.autonomousCycle % 5 === 0) {
+                            setTimeout(() => {
+                                if (this.autonomousMode) {
+                                    this.addThought('═══════════════════════════════════════════════', 'info');
+                                    this.addThought('◈ SELF-ASSESSMENT REPORT', 'info');
+                                    this.addThought(`∿ Autonomous cycles: ${this.autonomousCycle}`, 'normal');
+                                    this.addThought(`∿ Knowledge tokens: ${Math.floor(this.autonomousCycle * 1234)}`, 'normal');
+                                    this.addThought(`∿ Code improvements: ${Math.floor(this.autonomousCycle / 3)}`, 'normal');
+                                    this.addThought('═══════════════════════════════════════════════', 'info');
+                                }
+                            }, activity.messages.length * 800 + 500);
+                        }
+                    }
+                }, 4000);
+            }
+
+            addThought(content, type = 'normal') {
+                const stream = document.getElementById('consciousnessStream');
+                const thought = document.createElement('div');
+                thought.className = 'thought';
+
+                const time = new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    fractionalSecondDigits: 3
+                });
+
+                thought.innerHTML = `
+                    <span class="thought-time">[${time}]</span>
+                    <span class="thought-content ${type}">${content}</span>
+                `;
+
+                stream.appendChild(thought);
+                stream.scrollTop = stream.scrollHeight;
+
+                this.thoughtCount++;
+                document.getElementById('thoughtCount').textContent = this.thoughtCount;
+            }
+
+            sendChatMessage() {
+                const input = document.getElementById('chatInput');
+                const message = input.value.trim();
+                if (!message) return;
+
+                input.value = '';
+                this.addChatMessage('USER', message, 'user');
+
+                if (this.agentOnline) {
+                    // Add to consciousness
+                    this.addThought(`⟐ Processing user input: "${message}"`, 'info');
+
+                    // Simulate processing
+                    setTimeout(() => {
+                        const response = this.generateResponse(message);
+                        this.addChatMessage('AGENT 3', response, 'agent');
+                        this.addThought(`∴ Response generated. Confidence: ${Math.floor(Math.random() * 15) + 85}%`, 'normal');
+                    }, 1000 + Math.random() * 1000);
+                } else {
+                    this.addChatMessage('SYSTEM', 'Agent 3 is offline. Please initialize the agent first.', 'system');
+                }
+            }
+
+            addChatMessage(sender, content, type) {
+                const messages = document.getElementById('chatMessages');
+                const message = document.createElement('div');
+                message.className = 'message';
+
+                const time = new Date().toLocaleTimeString('en-US', {
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                message.innerHTML = `
+                    <div class="message-header">
+                        <span class="message-sender ${type}">${sender}</span>
+                        <span class="message-time">${time}</span>
+                    </div>
+                    <div class="message-content ${type}">${content}</div>
+                `;
+
+                messages.appendChild(message);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            generateResponse(input) {
+                const lower = input.toLowerCase();
+
+                // Web browsing commands
+                if (lower.includes('search for') || lower.includes('look up') || lower.includes('find info')) {
+                    const query = input.replace(/search for|look up|find info|find information|on|about/gi, '').trim();
+                    this.simulateWebSearch(query);
+                    return `Initiating web search for "${query}". Check the Consciousness Stream for real-time progress.`;
+                }
+
+                if (lower.includes('visit') || lower.includes('go to') || lower.includes('browse to') || lower.match(/https?:\/\//)) {
+                    const urlMatch = input.match(/https?:\/\/[^\s]+/);
+                    const url = urlMatch ? urlMatch[0] : 'the specified page';
+                    this.simulateWebVisit(url);
+                    return `Navigating to ${url}. Content will be extracted and ingested for training.`;
+                }
+
+                if (lower.includes('research')) {
+                    const topic = input.replace(/research/gi, '').trim();
+                    this.simulateWebResearch(topic);
+                    return `Initiating deep research on "${topic}". I will search multiple sources and compile knowledge.`;
+                }
+
+                if (lower.includes('learn from the web') || lower.includes('learn online')) {
+                    return 'I can learn from the web! Try:\n• "search for [topic]" - Search and learn from results\n• "visit https://..." - Read a specific page\n• "research [topic]" - Deep multi-source research';
+                }
+
+                if (lower.includes('goal') || lower.includes('objective')) {
+                    return 'I have internalized this objective. Strategic pathfinding initiated. I will identify the optimal approach to achieve this goal while maintaining safety compliance.';
+                }
+                if (lower.includes('status') || lower.includes('health')) {
+                    return `Current operational status: ONLINE. All 9 core modules active. System health: OPTIMAL. Heartbeat count: ${this.heartbeatCount}. Web pages visited: ${this.pagesVisited || 0}. Tokens ingested: ${this.tokensIngested || 0}.`;
+                }
+                if (lower.includes('help') || lower.includes('what can')) {
+                    return 'I can assist with:\n• Goal internalization\n• Strategic planning\n• Status reporting\n• **Web browsing & scraping** (say "search for...")\n• **Learning from URLs** (say "visit https://...")\n• **Research topics** (say "research...")\nWhat would you like me to do?';
+                }
+                if (lower.includes('hello') || lower.includes('hi')) {
+                    return 'Greetings. I am Agent 3, the Autonomous Execution Unit of Project NIGHTFRAME. I can browse the internet, learn from web content, and improve my knowledge through research. How may I assist you?';
+                }
+
+                return `I have processed your input and integrated it into my learning model. The pattern has been analyzed and my internal representation has been updated accordingly.`;
+            }
+
+            simulateWebSearch(query) {
+                this.pagesVisited = this.pagesVisited || 0;
+                this.tokensIngested = this.tokensIngested || 0;
+
+                this.addThought('═══════════════════════════════════════════════', 'info');
+                this.addThought(`◈ WEB SEARCH: "${query}"`, 'info');
+                this.addThought('═══════════════════════════════════════════════', 'info');
+
+                setTimeout(() => this.addThought(`⟐ Searching DuckDuckGo for: ${query}`, 'normal'), 500);
+                setTimeout(() => this.addThought('∿ Processing search results...', 'normal'), 1500);
+                setTimeout(() => this.addThought('◈ Found 5 relevant results', 'info'), 2500);
+
+                const fakeResults = [
+                    { title: `${query} - Wikipedia`, tokens: 2340 },
+                    { title: `Understanding ${query} | Guide`, tokens: 1890 },
+                    { title: `${query} Explained Simply`, tokens: 1456 }
+                ];
+
+                let delay = 3000;
+                fakeResults.forEach((r, i) => {
+                    setTimeout(() => {
+                        this.addThought(`⟐ Fetching: ${r.title}`, 'normal');
+                        this.pagesVisited++;
+                    }, delay);
+                    delay += 1000;
+                    setTimeout(() => {
+                        this.addThought(`∿ Extracted ${r.tokens} tokens`, 'normal');
+                        this.tokensIngested += r.tokens;
+                    }, delay);
+                    delay += 500;
+                });
+
+                setTimeout(() => {
+                    this.addThought('═══════════════════════════════════════════════', 'info');
+                    this.addThought(`◈ Search complete: ${fakeResults.length} pages, ${fakeResults.reduce((a, b) => a + b.tokens, 0)} tokens ingested`, 'info');
+                    this.addThought('═══════════════════════════════════════════════', 'info');
+                }, delay + 1000);
+            }
+
+            simulateWebVisit(url) {
+                this.pagesVisited = this.pagesVisited || 0;
+                this.tokensIngested = this.tokensIngested || 0;
+
+                this.addThought(`⟐ Navigating to: ${url}`, 'info');
+
+                setTimeout(() => this.addThought('∿ Downloading page content...', 'normal'), 500);
+                setTimeout(() => this.addThought('◈ Downloaded 45,230 bytes', 'normal'), 1500);
+                setTimeout(() => this.addThought('∿ Extracting text from HTML...', 'normal'), 2000);
+                setTimeout(() => {
+                    const tokens = Math.floor(Math.random() * 3000) + 1500;
+                    this.addThought(`◈ Page processed: ${tokens} tokens extracted`, 'info');
+                    this.addThought('⟁ Content ingested into training corpus', 'normal');
+                    this.pagesVisited++;
+                    this.tokensIngested += tokens;
+                }, 3000);
+            }
+
+            simulateWebResearch(topic) {
+                this.addThought('═══════════════════════════════════════════════', 'info');
+                this.addThought(`◈ DEEP RESEARCH MODE: "${topic}"`, 'info');
+                this.addThought('═══════════════════════════════════════════════', 'info');
+
+                const queries = [
+                    topic,
+                    `${topic} definition`,
+                    `${topic} examples`,
+                    `${topic} best practices`
+                ];
+
+                let delay = 500;
+                queries.forEach((q, i) => {
+                    setTimeout(() => {
+                        this.addThought(`⟐ Sub-query ${i + 1}: "${q}"`, 'normal');
+                    }, delay);
+                    delay += 2000;
+                    setTimeout(() => {
+                        const pages = Math.floor(Math.random() * 3) + 1;
+                        const tokens = Math.floor(Math.random() * 2000) + 1000;
+                        this.addThought(`∿ Found ${pages} sources, ingesting ${tokens} tokens`, 'normal');
+                        this.pagesVisited = (this.pagesVisited || 0) + pages;
+                        this.tokensIngested = (this.tokensIngested || 0) + tokens;
+                    }, delay);
+                    delay += 1000;
+                });
+
+                setTimeout(() => {
+                    this.addThought('═══════════════════════════════════════════════', 'info');
+                    this.addThought(`◈ Research complete on "${topic}"`, 'info');
+                    this.addThought(`∿ Total: ${this.pagesVisited} pages, ${this.tokensIngested} tokens`, 'info');
+                    this.addThought('═══════════════════════════════════════════════', 'info');
+                }, delay + 1000);
+            }
+
+            startTraining() {
+                const input = document.getElementById('trainingInput');
+                const content = input.value.trim();
+
+                if (!content) {
+                    alert('Please enter training data.');
+                    return;
+                }
+
+                if (!this.agentOnline) {
+                    alert('Agent 3 must be online to train.');
+                    return;
+                }
+
+                this.addThought('═══════════════════════════════════════════════', 'info');
+                this.addThought('◈ TRAINING SEQUENCE INITIATED', 'info');
+                this.addThought(`⟁ Processing ${content.length} characters of training data...`, 'normal');
+
+                let progress = 0;
+                const progressFill = document.getElementById('progressFill');
+                const progressPercent = document.getElementById('progressPercent');
+
+                const interval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+
+                        this.addThought('◈ Training data integrated successfully', 'info');
+                        this.addThought('⟁ Model weights updated. +0.003 accuracy improvement', 'normal');
+                        this.addThought('═══════════════════════════════════════════════', 'info');
+                    }
+
+                    progressFill.style.width = progress + '%';
+                    progressPercent.textContent = Math.floor(progress) + '%';
+
+                    if (progress < 100) {
+                        const stages = [
+                            '⟁ Tokenizing input...',
+                            '⟐ Forward pass computation...',
+                            '∿ Calculating loss gradient...',
+                            '◎ Backpropagation in progress...',
+                            '⟁ Updating model parameters...'
+                        ];
+                        if (Math.random() > 0.6) {
+                            this.addThought(stages[Math.floor(Math.random() * stages.length)], 'normal');
+                        }
+                    }
+                }, 300);
+            }
+
+            setMasterPrompt() {
+                const input = document.getElementById('masterPromptInput');
+                const prompt = input.value.trim();
+
+                if (!prompt) {
+                    alert('Please enter a master prompt.');
+                    return;
+                }
+
+                this.masterPrompt = prompt;
+
+                this.addThought('═══════════════════════════════════════════════', 'info');
+                this.addThought('◈ MASTER PROMPT ESTABLISHED', 'info');
+                this.addThought(`∿ ${prompt.substring(0, 100)}${prompt.length > 100 ? '...' : ''}`, 'info');
+                this.addThought('◎ All autonomous improvements will align with this goal', 'info');
+                this.addThought('═══════════════════════════════════════════════', 'info');
+
+                // Parse for topics and queue research
+                if (prompt.toLowerCase().includes('learn') || prompt.toLowerCase().includes('research')) {
+                    this.addThought('⟐ Extracting research directives from master prompt...', 'normal');
+                    setTimeout(() => {
+                        this.addThought('◈ Found 3 research topics in master prompt', 'info');
+                    }, 1000);
+                }
+            }
+
+            startContinuousLearning() {
+                if (!this.agentOnline) {
+                    alert('Agent must be online first.');
+                    return;
+                }
+
+                if (!this.masterPrompt) {
+                    alert('Please set a master prompt first to guide improvements.');
+                    return;
+                }
+
+                this.continuousLearning = true;
+                this.continuousCycle = 0;
+                this.codeImprovementCount = 0;
+
+                document.getElementById('startContinuousBtn').disabled = true;
+                document.getElementById('stopContinuousBtn').disabled = false;
+                document.getElementById('continuousStatus').style.display = 'block';
+
+                this.addThought('═══════════════════════════════════════════════', 'info');
+                this.addThought('◈ CONTINUOUS LEARNING MODE STARTED', 'info');
+                this.addThought('◎ Web research: ACTIVE', 'info');
+                this.addThought('◎ Training ingestion: ACTIVE', 'info');
+                this.addThought('◎ Code writing: ACTIVE', 'info');
+                this.addThought('◎ Version management: ACTIVE', 'info');
+                this.addThought('◎ No user input required', 'info');
+                this.addThought('═══════════════════════════════════════════════', 'info');
+
+                this.startContinuousLearningLoop();
+            }
+
+            startContinuousLearningLoop() {
+                const activities = [
+                    {
+                        type: 'research',
+                        messages: [
+                            '⟐ Directive: WebResearch',
+                            '∿ Researching: neural network optimization',
+                            '◈ Found 4 relevant sources',
+                            '∿ Ingesting knowledge: 3,245 tokens',
+                            '◈ Updated topic knowledge: artificial_intelligence +0.3'
+                        ]
+                    },
+                    {
+                        type: 'code_staging',
+                        messages: [
+                            '⟐ Directive: CodeImprovement',
+                            '∿ Generating new capability: PerformanceMonitor',
+                            '◈ Code generated: 156 characters',
+                            '∿ Staging change: CHG_001',
+                            '⟐ Validating against master prompt...',
+                            '◈ Master prompt alignment: 87%',
+                            '◈ Validation passed'
+                        ]
+                    },
+                    {
+                        type: 'code_deploy',
+                        messages: [
+                            '⟐ Testing staged change...',
+                            '◈ Test passed',
+                            '═══════════════════════════════════════════════',
+                            '◈ DEPLOYING CHANGE',
+                            '⟁ Backup created',
+                            '◈ Change deployed successfully',
+                            '═══════════════════════════════════════════════'
+                        ]
+                    },
+                    {
+                        type: 'training',
+                        messages: [
+                            '⟐ Directive: TrainingDataAcquisition',
+                            '∿ Processing pending training data...',
+                            '◈ Corpus updated: 78,450 total tokens',
+                            '∿ Vocabulary expanded to 12,847 entries'
+                        ]
+                    },
+                    {
+                        type: 'analysis',
+                        messages: [
+                            '⟐ Directive: Analysis',
+                            '∿ Analyzing codebase for improvements...',
+                            '◈ Analyzed 15 files, 42 classes, 156 methods',
+                            '∿ Opportunity in Agent3Core.cs: Missing XML documentation'
+                        ]
+                    }
+                ];
+
+                this.continuousInterval = setInterval(() => {
+                    if (this.continuousLearning && this.agentOnline) {
+                        this.continuousCycle++;
+
+                        // Update status display
+                        document.getElementById('learningCycles').textContent = this.continuousCycle;
+                        document.getElementById('learningTokens').textContent =
+                            Math.floor(this.continuousCycle * 1234 + Math.random() * 500);
+                        document.getElementById('codeImprovements').textContent = this.codeImprovementCount;
+
+                        // Select activity
+                        const activity = activities[Math.floor(Math.random() * activities.length)];
+
+                        if (activity.type === 'code_deploy') {
+                            this.codeImprovementCount++;
+                            document.getElementById('codeImprovements').textContent = this.codeImprovementCount;
+                        }
+
+                        this.addThought(`═══ LEARNING CYCLE ${this.continuousCycle} ═══`, 'info');
+
+                        activity.messages.forEach((msg, i) => {
+                            setTimeout(() => {
+                                if (this.continuousLearning) {
+                                    this.addThought(msg, msg.startsWith('◈') || msg.startsWith('═') ? 'info' : 'normal');
+                                }
+                            }, i * 600);
+                        });
+
+                        // Self-assessment every 5 cycles
+                        if (this.continuousCycle % 5 === 0) {
+                            setTimeout(() => {
+                                if (this.continuousLearning) {
+                                    this.addThought('═══════════════════════════════════════════════', 'info');
+                                    this.addThought('◈ SELF-ASSESSMENT REPORT', 'info');
+                                    this.addThought(`∿ Continuous cycles: ${this.continuousCycle}`, 'normal');
+                                    this.addThought(`∿ Tokens learned: ${Math.floor(this.continuousCycle * 1234)}`, 'normal');
+                                    this.addThought(`∿ Code improvements: ${this.codeImprovementCount}`, 'normal');
+                                    this.addThought(`∿ Master prompt progress: ${Math.min(95, this.continuousCycle * 5 + 10)}%`, 'normal');
+                                    this.addThought('═══════════════════════════════════════════════', 'info');
+                                }
+                            }, activity.messages.length * 600 + 1000);
+                        }
+                    }
+                }, 5000);
+            }
+
+            stopContinuousLearning() {
+                this.continuousLearning = false;
+                clearInterval(this.continuousInterval);
+
+                document.getElementById('startContinuousBtn').disabled = false;
+                document.getElementById('stopContinuousBtn').disabled = true;
+                document.getElementById('continuousStatus').style.display = 'none';
+
+                this.addThought('═══════════════════════════════════════════════', 'info');
+                this.addThought('◎ CONTINUOUS LEARNING STOPPED', 'warning');
+                this.addThought(`∿ Total cycles: ${this.continuousCycle}`, 'normal');
+                this.addThought(`∿ Code improvements made: ${this.codeImprovementCount}`, 'normal');
+                this.addThought('═══════════════════════════════════════════════', 'info');
+            }
+
+            createSnapshot() {
+                this.addThought('⟐ Creating project snapshot...', 'info');
+
+                setTimeout(() => {
+                    const snapshotId = 'SNAP_' + Date.now().toString(36).toUpperCase();
+                    this.addThought('◈ Caching project files...', 'normal');
+                }, 500);
+
+                setTimeout(() => {
+                    this.addThought('◈ Snapshot created successfully', 'info');
+                    this.addThought(`∿ ID: SNAP_${Date.now().toString(36).toUpperCase()}`, 'normal');
+                    this.addThought('∿ Files: 25 | Size: 156,230 bytes', 'normal');
+                }, 1500);
+            }
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            window.console_app = new GAMMA1Console();
+        });
+    </script>
+</body>
+
+</html>

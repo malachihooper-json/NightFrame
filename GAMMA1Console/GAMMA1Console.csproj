@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <AssemblyName>GAMMA1Console</AssemblyName>
+    <RootNamespace>GAMMA1Console</RootNamespace>
+    <Version>0.1.0</Version>
+    <Authors>Project NIGHTFRAME</Authors>
+    <Description>GAMMA1 Console - Autonomous Agent Control System</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="10.0.1" />
+    <Reference Include="Microsoft.VisualBasic" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Agent3\Agent3.csproj" />
+  </ItemGroup>
+
+
+
+</Project>

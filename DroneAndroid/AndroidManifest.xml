@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.nightframe.drone"
+    android:versionCode="2"
+    android:versionName="2.0.0">
+    
+    <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34" />
+    
+    <!-- Core Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    
+    <!-- Location Permissions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    
+    <!-- Cellular/Telephony Permissions -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PRECISE_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+    
+    <!-- 5G/NR specific (API 29+) -->
+    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" 
+                     android:maxSdkVersion="33" />
+    
+    <!-- Hotspot/Tethering -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    
+    <!-- Background Service -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    
+    <!-- Required features -->
+    <uses-feature android:name="android.hardware.telephony" android:required="true" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+    <uses-feature android:name="android.hardware.wifi" android:required="false" />
+    
+    <application
+        android:label="NFRAME Scout"
+        android:icon="@mipmap/ic_launcher"
+        android:theme="@style/AppTheme"
+        android:allowBackup="true"
+        android:networkSecurityConfig="@xml/network_security_config">
+        
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <!-- Background Wi-Fi Scout Service -->
+        <service
+            android:name=".ScoutService"
+            android:exported="false"
+            android:foregroundServiceType="location|dataSync" />
+        
+        <!-- Background Cellular Scout Service -->
+        <service
+            android:name=".Cellular.CellularScoutService"
+            android:exported="false"
+            android:foregroundServiceType="location|dataSync" />
+        
+        <!-- Boot Receiver -->
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+        
+    </application>
+</manifest>

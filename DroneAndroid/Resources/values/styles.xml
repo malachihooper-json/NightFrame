@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Theme -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary colors -->
+        <item name="colorPrimary">#7C3AED</item>
+        <item name="colorPrimaryDark">#5B21B6</item>
+        <item name="colorPrimaryVariant">#5B21B6</item>
+        
+        <!-- Secondary colors -->
+        <item name="colorSecondary">#06B6D4</item>
+        <item name="colorSecondaryVariant">#0891B2</item>
+        
+        <!-- Background -->
+        <item name="android:windowBackground">@drawable/gradient_background</item>
+        <item name="android:colorBackground">#0A0A0F</item>
+        
+        <!-- Text colors -->
+        <item name="android:textColorPrimary">#F8FAFC</item>
+        <item name="android:textColorSecondary">#94A3B8</item>
+        
+        <!-- Status bar -->
+        <item name="android:statusBarColor">#0A0A0F</item>
+        <item name="android:navigationBarColor">#0A0A0F</item>
+        
+        <!-- Accent -->
+        <item name="colorAccent">#7C3AED</item>
+    </style>
+    
+    <!-- Splash Screen Theme -->
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+    
+    <!-- Colors -->
+    <color name="nf_primary">#7C3AED</color>
+    <color name="nf_secondary">#06B6D4</color>
+    <color name="nf_background">#0A0A0F</color>
+    <color name="nf_surface">#1E1E2D</color>
+    <color name="nf_text">#F8FAFC</color>
+    <color name="nf_text_muted">#6B7280</color>
+    <color name="nf_success">#22C55E</color>
+    <color name="nf_warning">#F59E0B</color>
+    <color name="nf_error">#EF4444</color>
+    
+    <!-- Strings -->
+    <string name="app_name">NFRAME Scout</string>
+    <string name="notification_title">NFRAME Scout Active</string>
+    <string name="notification_text">Scanning for mesh networks...</string>
+    <string name="permission_location_title">Location Permission Required</string>
+    <string name="permission_location_message">NFRAME needs location access to scan for Wi-Fi networks and help grow the mesh.</string>
+</resources>

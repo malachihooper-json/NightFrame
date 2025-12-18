@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Agent3</AssemblyName>
+    <RootNamespace>Agent3</RootNamespace>
+    <Version>0.1.0</Version>
+    <Authors>Project NIGHTFRAME</Authors>
+    <Description>Agent 3 - Autonomous Execution Unit Core Library</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PdfPig" Version="0.1.12" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
+    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+</Project>
