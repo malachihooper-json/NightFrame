@@ -1,6 +1,4 @@
-# NIGHTFRAME
-
-## Decentralized AI Mesh Network
+# Nightframe Agent 3 Lead Documentation
 
 NIGHTFRAME is a distributed computing platform designed for collaborative neural network inference across a mesh of autonomous nodes. The system integrates cellular intelligence, GPU-accelerated ONNX runtime environments, and automated network propagation mechanisms.
 
